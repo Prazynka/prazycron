@@ -1,5 +1,5 @@
 name: prazycron
-base: core24
+base: core26
 version: '2.1.0'
 summary: Graphical and terminal Cron task manager
 description: |
@@ -12,7 +12,12 @@ confinement: classic
 license: MIT
 website: https://github.com/Prazynka/prazycron
 issues: https://github.com/Prazynka/prazycron/issues
-source-code: https://github.com/Prazynka/prazycron
+source-code:
+  - https://github.com/Prazynka/prazycron
+
+platforms:
+  amd64:
+  arm64:
 
 apps:
   prazycron:
@@ -32,26 +37,27 @@ parts:
     stage-packages:
       - python3
       - python3-tk
-      - cron
-      - util-linux
-      - systemd
-      - policykit-1
       - xdg-utils
     override-build: |
       install -d "$CRAFT_PART_INSTALL/usr/lib/python3/dist-packages/prazycron"
       install -m 0644 prazycron/*.py "$CRAFT_PART_INSTALL/usr/lib/python3/dist-packages/prazycron/"
+
       install -Dm 0755 /dev/stdin "$CRAFT_PART_INSTALL/usr/bin/prazycron" <<'SCRIPT'
       #!/usr/bin/env bash
       exec python3 -m prazycron.main "$@"
       SCRIPT
+
       install -Dm 0755 /dev/stdin "$CRAFT_PART_INSTALL/usr/bin/prazycron-run" <<'SCRIPT'
       #!/usr/bin/env bash
       exec python3 -m prazycron.execution "$@"
       SCRIPT
+
       install -Dm 0644 packaging/prazycron.desktop "$CRAFT_PART_INSTALL/usr/share/applications/prazycron.desktop"
       install -Dm 0644 packaging/net.prazynka.PrazyCron.metainfo.xml "$CRAFT_PART_INSTALL/usr/share/metainfo/net.prazynka.PrazyCron.metainfo.xml"
+
       for size in 16 24 32 48 64 128 256 512; do
         install -Dm 0644 "assets/prazycron-${size}.png" "$CRAFT_PART_INSTALL/usr/share/icons/hicolor/${size}x${size}/apps/prazycron.png"
       done
+
       install -Dm 0644 assets/status-on.png "$CRAFT_PART_INSTALL/usr/share/prazycron/status-on.png"
       install -Dm 0644 assets/status-off.png "$CRAFT_PART_INSTALL/usr/share/prazycron/status-off.png"
