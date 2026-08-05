@@ -1,0 +1,79 @@
+name: AppImage
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/appimage.yml"
+      - "scripts/build-appimage.sh"
+      - "prazycron/**"
+      - "assets/**"
+      - "packaging/**"
+      - "pyproject.toml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-appimage:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            python3 python3-tk curl libfuse2 zsync xvfb \
+            cron systemd policykit-1 desktop-file-utils appstream
+
+      - name: Build AppImage
+        run: |
+          chmod +x scripts/build-appimage.sh
+          ./scripts/build-appimage.sh
+
+      - name: Test AppImage
+        run: |
+          APPIMAGE="$(find dist -maxdepth 1 -type f -name 'PrazyCron-*-x86_64.AppImage' -print -quit)"
+          test -n "$APPIMAGE"
+          APPIMAGE_EXTRACT_AND_RUN=1 "$APPIMAGE" --version
+          APPIMAGE_EXTRACT_AND_RUN=1 xvfb-run -a "$APPIMAGE" --smoke-test
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: prazycron-appimage
+          path: |
+            dist/PrazyCron-*-x86_64.AppImage
+            dist/PrazyCron-*-x86_64.AppImage.zsync
+            dist/PrazyCron-*-x86_64.AppImage.sha256
+            dist/PrazyCron-*-x86_64.AppImage.zsync.sha256
+          if-no-files-found: error
+
+      - name: Attach AppImage to matching GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION="$(python3 - <<'PY'
+          from pathlib import Path
+          import re
+          text = Path('pyproject.toml').read_text(encoding='utf-8')
+          match = re.search(r'^version\s*=\s*"([^"]+)"', text, re.M)
+          if not match:
+              raise SystemExit('Unable to determine version')
+          print(match.group(1))
+          PY
+          )"
+          TAG="v${VERSION}"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" \
+              dist/PrazyCron-*-x86_64.AppImage \
+              dist/PrazyCron-*-x86_64.AppImage.zsync \
+              dist/PrazyCron-*-x86_64.AppImage.sha256 \
+              dist/PrazyCron-*-x86_64.AppImage.zsync.sha256 \
+              --clobber
+          else
+            echo "Release $TAG does not exist; files remain available as workflow artifacts."
+          fi
