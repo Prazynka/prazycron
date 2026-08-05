@@ -1,0 +1,4 @@
+include README.md LICENSE CHANGELOG.md
+recursive-include assets *.png
+recursive-include packaging *
+recursive-include docs *.md *.png

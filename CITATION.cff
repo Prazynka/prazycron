@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use PrazyCron in a project, please cite the software release."
+title: "PrazyCron Task Manager"
+type: software
+authors:
+  - name: Prazynka
+version: 2.1.0
+date-released: 2026-08-04
+url: "https://github.com/Prazynka/prazycron"
+license: MIT

@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=PrazyCron
+GenericName=PrazyCron Task Manager
+Comment=Cron made simple.
+Comment[pl]=Proste zarządzanie zadaniami Cron.
+Exec=prazycron --gui
+Icon=prazycron
+Terminal=false
+Categories=System;
+Keywords=cron;crontab;scheduler;tasks;automation;systemd;timer;Linux;
+StartupNotify=true
+StartupWMClass=PrazyCron

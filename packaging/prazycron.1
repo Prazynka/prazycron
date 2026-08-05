@@ -1,0 +1,49 @@
+.TH PRAZYCRON 1 "4 August 2026" "PrazyCron 2.1.0" "User Commands"
+.SH NAME
+prazycron \- manage Cron jobs and systemd timers in GUI or TUI
+.SH SYNOPSIS
+.B prazycron
+.RI [ options ]
+.SH DESCRIPTION
+PrazyCron Task Manager validates, explains, backs up and edits Linux Cron jobs and systemd timers. It provides future-run calculation, execution history, run-now, environment editing, conflict detection and diagnostics.
+.SH OPTIONS
+.TP
+.B --gui
+Force the graphical interface.
+.TP
+.B --tui
+Force the terminal interface.
+.TP
+.B --list
+Print Cron entries and exit.
+.TP
+.B --json
+Print Cron entries as JSON and exit.
+.TP
+.BI --analyze " INDEX"
+Analyze one Cron entry by one-based index.
+.TP
+.BI --next " INDEX"
+Print the next scheduled executions for a Cron entry.
+.TP
+.BI --history " INDEX"
+Print the recorded execution history for a Cron entry.
+.TP
+.B --diagnose
+Run Cron configuration and service diagnostics.
+.TP
+.B --systemd-list
+Print detected systemd timers.
+.TP
+.B --version
+Show the installed version.
+.SH FILES
+.I ~/.config/prazycron/settings.json
+.br
+.I ~/.local/share/prazycron/backups/
+.br
+.I ~/.local/share/prazycron/history/
+.br
+.I ~/.local/share/prazycron/entry-metadata.json
+.SH AUTHOR
+PrazyCron Project

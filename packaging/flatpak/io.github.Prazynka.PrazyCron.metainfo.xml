@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.Prazynka.PrazyCron</id>
+  <name>PrazyCron</name>
+  <summary>Cron made simple</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <description>
+    <p>PrazyCron provides graphical and terminal interfaces for Linux Cron jobs and systemd timers.</p>
+    <p>It validates changes, creates backups, calculates future runs, records execution history, and diagnoses common scheduling problems.</p>
+  </description>
+  <url type="homepage">https://github.com/Prazynka/prazycron</url>
+  <url type="bugtracker">https://github.com/Prazynka/prazycron/issues</url>
+  <developer id="io.github.prazynka"><name>Prazynka</name></developer>
+  <launchable type="desktop-id">io.github.Prazynka.PrazyCron.desktop</launchable>
+  <provides><binary>prazycron</binary></provides>
+  <content_rating type="oars-1.1"/>
+  <releases><release version="2.1.0" date="2026-08-04"/></releases>
+</component>

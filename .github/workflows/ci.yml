@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-tk xvfb cron util-linux systemd policykit-1 desktop-file-utils appstream
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -v
+      - name: Compile Python sources
+        run: python -m compileall -q prazycron
+      - name: GUI smoke test
+        run: xvfb-run -a python -m prazycron.main --gui --smoke-test
+      - name: Validate desktop metadata
+        run: |
+          desktop-file-validate packaging/prazycron.desktop
+          appstreamcli validate --no-net packaging/net.prazynka.PrazyCron.metainfo.xml
+
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install packaging dependencies
+        run: sudo apt-get update && sudo apt-get install -y python3 dpkg-dev
+      - name: Build DEB
+        run: ./build-deb.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: prazycron-deb
+          path: dist/*.deb
+          if-no-files-found: error
