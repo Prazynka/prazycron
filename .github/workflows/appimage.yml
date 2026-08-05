@@ -67,13 +67,10 @@ jobs:
           PY
           )"
           TAG="v${VERSION}"
+          mapfile -t RELEASE_FILES < <(find dist -maxdepth 1 -type f -name 'PrazyCron-*-x86_64.AppImage*' -print | sort)
+          test "${#RELEASE_FILES[@]}" -gt 0
           if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release upload "$TAG" \
-              dist/PrazyCron-*-x86_64.AppImage \
-              dist/PrazyCron-*-x86_64.AppImage.zsync \
-              dist/PrazyCron-*-x86_64.AppImage.sha256 \
-              dist/PrazyCron-*-x86_64.AppImage.zsync.sha256 \
-              --clobber
+            gh release upload "$TAG" "${RELEASE_FILES[@]}" --clobber
           else
             echo "Release $TAG does not exist; files remain available as workflow artifacts."
           fi
