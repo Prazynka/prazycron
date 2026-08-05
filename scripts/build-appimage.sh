@@ -22,6 +22,8 @@ APPDIR="$ROOT_DIR/build/PrazyCron.AppDir"
 TOOLS_DIR="$ROOT_DIR/build/appimage-tools"
 OUT_DIR="$ROOT_DIR/dist"
 OUT_FILE="$OUT_DIR/PrazyCron-${VERSION}-${ARCH}.AppImage"
+ZSYNC_FILE="$OUT_FILE.zsync"
+ROOT_ZSYNC_FILE="$ROOT_DIR/$(basename "$OUT_FILE").zsync"
 
 rm -rf "$APPDIR"
 mkdir -p \
@@ -121,14 +123,18 @@ done < <(find "$APPDIR/usr/lib/python${PYTHON_VERSION}/lib-dynload" -type f -nam
 
 "$LINUXDEPLOY" "${deploy_args[@]}"
 
-rm -f "$OUT_FILE" "$OUT_FILE.zsync"
+rm -f "$OUT_FILE" "$ZSYNC_FILE" "$ROOT_ZSYNC_FILE"
 UPDATE_INFO="gh-releases-zsync|Prazynka|prazycron|latest|PrazyCron-*-${ARCH}.AppImage.zsync"
 ARCH="$ARCH" "$APPIMAGETOOL" -u "$UPDATE_INFO" "$APPDIR" "$OUT_FILE"
 chmod +x "$OUT_FILE"
 
+if [[ -f "$ROOT_ZSYNC_FILE" && "$ROOT_ZSYNC_FILE" != "$ZSYNC_FILE" ]]; then
+  mv "$ROOT_ZSYNC_FILE" "$ZSYNC_FILE"
+fi
+
 sha256sum "$OUT_FILE" > "$OUT_FILE.sha256"
-if [[ -f "$OUT_FILE.zsync" ]]; then
-  sha256sum "$OUT_FILE.zsync" > "$OUT_FILE.zsync.sha256"
+if [[ -f "$ZSYNC_FILE" ]]; then
+  sha256sum "$ZSYNC_FILE" > "$ZSYNC_FILE.sha256"
 fi
 
 printf 'Built: %s\n' "$OUT_FILE"
